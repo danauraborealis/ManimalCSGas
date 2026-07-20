@@ -63,6 +63,11 @@
     <Reference Include="spt-reflection">
       <HintPath>D:\SPTDev\BepInEx\plugins\spt\spt-reflection.dll</HintPath>
     </Reference>
+    <!-- BundleManager — resolve our bundles.json bundles to their client-local file
+         (Fika/headless-safe; never assume client and server share a disk) -->
+    <Reference Include="spt-custom">
+      <HintPath>D:\SPTDev\BepInEx\plugins\spt\spt-custom.dll</HintPath>
+    </Reference>
     <Reference Include="Assembly-CSharp">
       <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>

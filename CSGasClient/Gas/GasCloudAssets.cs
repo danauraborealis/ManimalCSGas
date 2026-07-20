@@ -5,15 +5,19 @@ using UnityEngine;
 namespace Manimal.CSGas.Gas
 {
     // loads the authored gas assets from csgas_fx.bundle: the cloud particle prefab and the
-    // tears vignette shader. bundle lives in the server bundles tree so both sides deploy
-    // through the server PostBuild target — same pattern as GoldenPick's killstreaksheen.
-    // SPT doesnt eager-load it since no item references it, so a direct
-    // AssetBundle.LoadFromFile is fine. one load attempt, everything cached; each asset
-    // degrades independently (no prefab → M18 smoke clone; no shader → no tears overlay).
+    // tears vignette shader. bundles are registered in bundles.json, so the CLIENT gets
+    // them through SPT's bundle pipeline — resolve the local file via BundleManager
+    // (direct mod path for a local server, downloaded cache for Fika/headless remotes).
+    // never assume client and server share a disk (WTT review feedback). the old
+    // hardcoded server-folder path survives only as a last-resort fallback. SPT doesnt
+    // eager-load these bundles (no item references them), so LoadFromFile + Unload(false)
+    // is fine. one load attempt, everything cached; each asset degrades independently
+    // (no prefab → M18 smoke clone; no shader → no tears overlay).
     internal static class GasCloudAssets
     {
-        private const string BundleRelPath = @"SPT\user\mods\CSGasServer\bundles\csgas_fx.bundle";
-        private const string CoughBundleRelPath = @"SPT\user\mods\CSGasServer\bundles\cough_animation.bundle";
+        private const string FxBundleKey = "csgas_fx.bundle";
+        private const string CoughBundleKey = "cough_animation.bundle";
+        private const string LegacyBundleDir = @"SPT\user\mods\CSGasServer\bundles";
         private const string PrefabName = "csgas_cloud_particles";
         private const string TearsShaderName = "Hidden/CSGasTears";
         private const string RealTearsShaderName = "Hidden/TearsEffect";
@@ -51,6 +55,29 @@ namespace Manimal.CSGas.Gas
             return null;
         }
 
+        // resolves a manifest bundle key to a local file the client can read. exact key
+        // first, then filename match (other mods' keys may carry subfolders), then the
+        // legacy same-disk server path.
+        private static string ResolveBundlePath(string key)
+        {
+            try
+            {
+                if (SPT.Custom.Utils.BundleManager.Bundles.TryGetValue(key, out var item))
+                    return SPT.Custom.Utils.BundleManager.GetBundleFilePath(item);
+                foreach (var kv in SPT.Custom.Utils.BundleManager.Bundles)
+                {
+                    if (Path.GetFileName(kv.Key) == key)
+                        return SPT.Custom.Utils.BundleManager.GetBundleFilePath(kv.Value);
+                }
+                Plugin.LogSource?.LogWarning($"[CSGas] '{key}' not in the client bundle manifest — trying legacy local path");
+            }
+            catch (Exception e)
+            {
+                Plugin.LogSource?.LogWarning($"[CSGas] BundleManager lookup failed for '{key}': {e.Message} — trying legacy local path");
+            }
+            return Path.Combine(BepInEx.Paths.GameRootPath, LegacyBundleDir, key);
+        }
+
         // first-person cough clip (med-use-blocked reaction), separate bundle so the user
         // can iterate on the animation without rebuilding the fx bundle
         public static AnimationClip GetCoughClip()
@@ -59,7 +86,7 @@ namespace Manimal.CSGas.Gas
             _coughLoadTried = true;
             try
             {
-                var path = Path.Combine(BepInEx.Paths.GameRootPath, CoughBundleRelPath);
+                var path = ResolveBundlePath(CoughBundleKey);
                 if (!File.Exists(path))
                 {
                     Plugin.LogSource?.LogWarning($"[CSGas] cough bundle not found at {path} — med-block cough animation disabled");
@@ -92,7 +119,7 @@ namespace Manimal.CSGas.Gas
             _loadTried = true;
             try
             {
-                var bundlePath = Path.Combine(BepInEx.Paths.GameRootPath, BundleRelPath);
+                var bundlePath = ResolveBundlePath(FxBundleKey);
                 if (!File.Exists(bundlePath))
                 {
                     Plugin.LogSource?.LogWarning($"[CSGas] cloud bundle not found at {bundlePath} — falling back to M18 smoke clone, no tears overlay");
