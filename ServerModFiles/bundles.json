@@ -1,0 +1,12 @@
+{
+  "manifest": [
+    {
+      "key": "cough_animation.bundle",
+      "dependencyKeys": []
+    },
+    {
+      "key": "csgas_fx.bundle",
+      "dependencyKeys": []
+    }
+  ]
+}

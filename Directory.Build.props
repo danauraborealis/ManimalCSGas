@@ -1,0 +1,18 @@
+<Project>
+  <!--
+    Single source of truth for the mod version + identity. bump ModVersion here
+    and it flows into:
+      - client BepInPlugin attribute (via generated ModVersion.g.cs)
+      - both csprojs <Version>
+      - server ModMetadata.Version (read from the assembly at runtime)
+      - the release zip filename (Manimal-CSGas-X.Y.Z.zip)
+  -->
+  <PropertyGroup>
+    <ModVersion>1.0.0</ModVersion>
+    <ModUsername>Manimal</ModUsername>
+    <ModDisplayName>CSGas</ModDisplayName>
+    <Version>$(ModVersion)</Version>
+    <AssemblyVersion>$(ModVersion)</AssemblyVersion>
+    <FileVersion>$(ModVersion)</FileVersion>
+  </PropertyGroup>
+</Project>

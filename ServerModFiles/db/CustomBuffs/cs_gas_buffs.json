@@ -1,0 +1,22 @@
+{
+  "CSGasExposure": [
+    {
+      "BuffType": "HandsTremor",
+      "Chance": 1,
+      "Delay": 1,
+      "Duration": 8,
+      "Value": 1,
+      "AbsoluteValue": true,
+      "SkillName": ""
+    },
+    {
+      "BuffType": "StaminaRate",
+      "Chance": 1,
+      "Delay": 1,
+      "Duration": 8,
+      "Value": -1.5,
+      "AbsoluteValue": true,
+      "SkillName": ""
+    }
+  ]
+}

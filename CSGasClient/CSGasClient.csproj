@@ -1,0 +1,129 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <RootNamespace>Manimal.CSGas</RootNamespace>
+    <AssemblyName>CSGasClient</AssemblyName>
+    <Nullable>disable</Nullable>
+    <Authors>$(ModUsername)</Authors>
+    <Configurations>Debug;Release</Configurations>
+    <LangVersion>latest</LangVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+  <!--
+    generates ModVersion.g.cs with a const string Plugin.cs uses for [BepInPlugin].
+    attribute args must be const so we cant read the version at runtime — driving it
+    off $(ModVersion) means a single bump in Directory.Build.props flows into the
+    BepInPlugin attribute.
+  -->
+  <Target Name="GenerateModVersion" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <ModVersionLines Include="// auto-generated. edit ModVersion in Directory.Build.props." />
+      <ModVersionLines Include="namespace Manimal.CSGas" />
+      <ModVersionLines Include="{" />
+      <ModVersionLines Include="    internal static class ModVersion" />
+      <ModVersionLines Include="    {" />
+      <ModVersionLines Include="        public const string Value = &quot;$(ModVersion)&quot;%3B" />
+      <ModVersionLines Include="    }" />
+      <ModVersionLines Include="}" />
+    </ItemGroup>
+    <MakeDir Directories="$(IntermediateOutputPath)" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)ModVersion.g.cs" Lines="@(ModVersionLines)" Overwrite="true" WriteOnlyWhenDifferent="true" />
+    <ItemGroup>
+      <Compile Include="$(IntermediateOutputPath)ModVersion.g.cs" />
+      <FileWrites Include="$(IntermediateOutputPath)ModVersion.g.cs" />
+    </ItemGroup>
+  </Target>
+
+  <ItemGroup>
+    <!-- compile-time only — the DLL itself ships with the installed WTT-ClientCommonLib
+         mod, we must NOT copy it into our plugin folder or bepinex loads it twice -->
+    <PackageReference Include="WTT-ClientCommonLib" Version="2.0.20" />
+  </ItemGroup>
+
+  <!--
+    Hint paths point at the dev SPT install. If you move SPTDev, retarget these in
+    one place. SpecificVersion=False on pinned refs tolerates minor BSG bumps without
+    a csproj edit. reference set is trimmed to what a grenade backport plausibly
+    touches (physics, particles, audio, bundle loading) — add UI/TMP refs from the
+    GoldenPick csproj if display work comes later.
+  -->
+  <ItemGroup>
+    <Reference Include="0Harmony">
+      <HintPath>D:\SPTDev\BepInEx\core\0Harmony.dll</HintPath>
+    </Reference>
+    <Reference Include="BepInEx">
+      <HintPath>D:\SPTDev\BepInEx\core\BepInEx.dll</HintPath>
+    </Reference>
+    <Reference Include="spt-common">
+      <HintPath>D:\SPTDev\BepInEx\plugins\spt\spt-common.dll</HintPath>
+    </Reference>
+    <Reference Include="spt-reflection">
+      <HintPath>D:\SPTDev\BepInEx\plugins\spt\spt-reflection.dll</HintPath>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="Comfort">
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
+    </Reference>
+    <Reference Include="Comfort.Unity">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\Comfort.Unity.dll</HintPath>
+    </Reference>
+    <Reference Include="ItemComponent.Types">
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\ItemComponent.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="ItemTemplate.Types">
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\ItemTemplate.Types.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <!-- grenade flight/impact -->
+    <Reference Include="UnityEngine.PhysicsModule">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <!-- gas cloud FX -->
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <!-- gas hiss / cough sounds -->
+    <Reference Include="UnityEngine.AudioModule">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <!-- cough clip playback: AnimatorOverrideController/AnimationClip + EFT's IAnimator -->
+    <Reference Include="UnityEngine.AnimationModule">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="AnimationSystem.Types">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\AnimationSystem.Types.dll</HintPath>
+    </Reference>
+    <!-- AssetBundle.LoadFromFile for any backported 1.0 FX assets -->
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <!-- dev-time deploy: copy the DLL into the local SPTDev BepInEx plugins folder -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <MakeDir Directories="D:\SPTDev\BepInEx\plugins\CSGas" />
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;D:\SPTDev\BepInEx\plugins\CSGas\$(TargetFileName)&quot;" />
+  </Target>
+
+</Project>
