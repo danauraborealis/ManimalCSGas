@@ -18,11 +18,13 @@ namespace Manimal.CSGas.Gas
         private const string FxBundleKey = "csgas_fx.bundle";
         private const string CoughBundleKey = "cough_animation.bundle";
         private const string LegacyBundleDir = @"SPT\user\mods\CSGasServer\bundles";
+        private const string JetPrefabName = "csgas_jet";
         private const string PrefabName = "csgas_cloud_particles";
         private const string TearsShaderName = "Hidden/CSGasTears";
         private const string RealTearsShaderName = "Hidden/TearsEffect";
 
         private static GameObject _cloudPrefab;
+        private static GameObject _jetPrefab;
         private static Shader _tearsShader;
         private static Material _tearsMaterial;
         private static AnimationClip _coughClip;
@@ -33,6 +35,14 @@ namespace Manimal.CSGas.Gas
         {
             EnsureLoaded();
             return _cloudPrefab;
+        }
+
+        // the authored nozzle jet + spark effect (optional bundle content) — attached to
+        // the canister for the emission window, replacing the suppressed vanilla plume
+        public static GameObject GetJetPrefab()
+        {
+            EnsureLoaded();
+            return _jetPrefab;
         }
 
         // the cloud prefab's particle material — reused for the grenade's fuse trail so the
@@ -137,11 +147,11 @@ namespace Manimal.CSGas.Gas
                 // "Assets/CS Gas/csgas_cloud_particles.prefab" (test-raid log)
                 foreach (var assetName in bundle.GetAllAssetNames())
                 {
-                    if (assetName.EndsWith(PrefabName + ".prefab", StringComparison.OrdinalIgnoreCase))
-                    {
+                    if (_cloudPrefab == null && assetName.EndsWith(PrefabName + ".prefab", StringComparison.OrdinalIgnoreCase))
                         _cloudPrefab = bundle.LoadAsset<GameObject>(assetName);
-                        break;
-                    }
+                    if (_jetPrefab == null && (assetName.EndsWith(JetPrefabName + ".prefab", StringComparison.OrdinalIgnoreCase)
+                                               || assetName.EndsWith("csgas_emission.prefab", StringComparison.OrdinalIgnoreCase)))
+                        _jetPrefab = bundle.LoadAsset<GameObject>(assetName);
                 }
                 if (_cloudPrefab != null && _cloudPrefab.GetComponentInChildren<ParticleSystem>(true) == null)
                 {

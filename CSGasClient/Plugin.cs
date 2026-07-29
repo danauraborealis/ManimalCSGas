@@ -11,6 +11,9 @@ namespace Manimal.CSGas
     // hard dep on commonlib so the item template exists before any of our patches run.
     [BepInPlugin(PluginGuid, PluginName, ModVersion.Value)]
     [BepInDependency("com.wtt.commonlib")]
+    // soft: only ordering — when Fika is present it must load first so our conditional
+    // FikaPlayer patch can resolve its type
+    [BepInDependency("com.fika.core", BepInDependency.DependencyFlags.SoftDependency)]
     public class Plugin : BaseUnityPlugin
     {
         public const string PluginGuid = "com.manimal.csgas";
@@ -103,12 +106,17 @@ namespace Manimal.CSGas
                 if (trimmed.Length > 0) CSGasConstants.RespiratorTpls.Add(trimmed);
             }
 
+            SafeEnable("CsGasPrefabRepairPatch",   () => new CsGasPrefabRepairPatch().Enable());
+            SafeEnable("CsGasEmissionKeyPatch",    () => new CsGasEmissionKeyPatch().Enable());
+            SafeEnable("CsGasGrenadeInitFixPatch", () => new CsGasGrenadeInitFixPatch().Enable());
             SafeEnable("CsGasCloudPatch",          () => new CsGasCloudPatch().Enable());
             SafeEnable("CsGasExplosionPatch",      () => new CsGasExplosionPatch().Enable());
             SafeEnable("CsGasEmissionAttachPatch", () => new CsGasEmissionAttachPatch().Enable());
             SafeEnable("CsGasHitDebuffMutePatch",  () => new CsGasHitDebuffMutePatch().Enable());
             SafeEnable("CsGasHurtVoiceMutePatch",  () => new CsGasHurtVoiceMutePatch().Enable());
             SafeEnable("CsGasMedBlockPatch",       () => new CsGasMedBlockPatch().Enable());
+            if (HarmonyLib.AccessTools.TypeByName("Fika.Core.Main.Players.FikaPlayer") != null)
+                SafeEnable("CsGasMedBlockFikaPatch", () => new CsGasMedBlockFikaPatch().Enable());
             SafeEnable("CsGasWorldDisposePatch",   () => new CsGasWorldDisposePatch().Enable());
         }
 

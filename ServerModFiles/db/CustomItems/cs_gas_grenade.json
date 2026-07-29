@@ -5,9 +5,14 @@
     "handbookParentId": "5b5f7a2386f774093f2ed3c4",
     "overrideProperties": {
       "ExaminedByDefault": false,
-      "CanSellOnRagfair": true,
-      "BackgroundColor": "yellow",
-      "EmitTime": 30
+      "CanSellOnRagfair": false,
+      "BackgroundColor": "black",
+	  "Prefab": {
+      "path": "weapon_grenade_m8230_container_manimal.bundle",
+      "rcid": ""
+    },
+      "EmitTime": 30,
+      "ExplDelay": 2
     },
     "locales": {
       "en": {

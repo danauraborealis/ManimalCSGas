@@ -143,6 +143,31 @@ namespace Manimal.CSGas.Gas
             if (_exploded) return;
             _exploded = true;
             _explodedAt = Time.time;
+            AttachNozzleJet();
+        }
+
+        // the authored spark + vertical jet from csgas_fx (the vanilla plume equivalent we
+        // suppress). parented to the canister at the smokeport so it rides along if the
+        // grenade still rolls; self-destructs when emission ends.
+        private void AttachNozzleJet()
+        {
+            var jetPrefab = GasCloudAssets.GetJetPrefab();
+            if (jetPrefab == null || _smoke == null) return;
+
+            var mount = FindSmokeport(transform) ?? transform;
+            var jet = Instantiate(jetPrefab, mount.position, mount.rotation, mount);
+            Destroy(jet, Mathf.Max(1f, _smoke.EmitTime));
+            Plugin.LogSource?.LogInfo("[CSGas] nozzle jet attached");
+        }
+
+        private static Transform FindSmokeport(Transform root)
+        {
+            foreach (var t in root.GetComponentsInChildren<Transform>(true))
+            {
+                if (t.name.IndexOf("smokeport", System.StringComparison.OrdinalIgnoreCase) >= 0)
+                    return t;
+            }
+            return null;
         }
 
         private void Update()
@@ -153,6 +178,15 @@ namespace Manimal.CSGas.Gas
 
             TryCreateEmitter();
             SuppressVanillaPlume();
+
+            // nothing hurts anyone before the fuse pops — the rebuilt prefab ships its
+            // Area collider active, so without this gate the fallback sphere is "live"
+            // from the moment of the throw (tears at your own hand)
+            if (!_exploded)
+            {
+                _exposure = 0f;
+                return;
+            }
 
             var player = Singleton<GameWorld>.Instance?.MainPlayer;
             if (player == null || player.HealthController == null || !player.HealthController.IsAlive)
@@ -223,6 +257,9 @@ namespace Manimal.CSGas.Gas
         private void TryCreateEmitter()
         {
             if (!_exploded || _emitterCreated || !Plugin.GasVolumetricCloud.Value) return;
+            // Fika headless host: no camera, nobody rendering — skip the visual cloud (the
+            // fallback sphere still exists for logic, and each real client grows its own)
+            if (Camera.main == null) return;
             // the bundle prefab is preferred inside Create; the emission/grenade objects are
             // only template fallbacks
             if (_emission != null)

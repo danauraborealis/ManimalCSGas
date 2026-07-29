@@ -77,6 +77,27 @@ namespace Manimal.CSGas.Gas
         }
     }
 
+    // Fika compatibility: FikaPlayer OVERRIDES the meds Proceed, so the base-Player patch
+    // above never fires for the local player in a Fika raid — patch the override too.
+    // registered only when Fika is loaded (soft dependency guarantees load order).
+    // everything else needs no Fika work: FikaHostSmokeGrenade : SmokeGrenade and
+    // FikaClientSmokeGrenade : ObservedSmokeGrenade both inherit Init/OnExplosion, so the
+    // cloud+effects patches fire on every peer; all effects are IsYourPlayer/MainPlayer
+    // gated so each client only gasses themselves.
+    public class CsGasMedBlockFikaPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod() =>
+            AccessTools.Method(AccessTools.TypeByName("Fika.Core.Main.Players.FikaPlayer"), "Proceed", new[]
+            {
+                typeof(MedsItemClass), typeof(GStruct382<EBodyPart>),
+                typeof(Callback<GInterface203>), typeof(int), typeof(bool)
+            });
+
+        [PatchPrefix]
+        public static bool Prefix(Player __instance, Callback<GInterface203> callback)
+            => CsGasMedBlockPatch.Prefix(__instance, callback);
+    }
+
     // animators die with the raid — drop the cached override controllers
     public class CsGasWorldDisposePatch : ModulePatch
     {
@@ -129,6 +150,80 @@ namespace Manimal.CSGas.Gas
                 && CsGasCloud.IsLocalPlayerGasBlocked)
                 return false;
             return true;
+        }
+    }
+
+    // the plume pool key is the settings GameObject's NAME, and the local-player throw
+    // path calls .AttachTo on the result without a null check. the rebuilt container's
+    // world object is named weapon_m8230_world_manimal (no pool entry) — fall back to the
+    // M18's pooled emission for m8230-ish keys so the throw survives. we suppress the
+    // plume for our grenade anyway, so which pool it comes from is cosmetic.
+    public class CsGasEmissionKeyPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod() =>
+            AccessTools.Method(typeof(Systems.Effects.Effects), nameof(Systems.Effects.Effects.GetEmissionEffect));
+
+        [PatchPostfix]
+        public static void Postfix(Systems.Effects.Effects __instance, string key, ref GrenadeEmission __result)
+        {
+            if (__result != null || key == null) return;
+            if (key.IndexOf("m8230", System.StringComparison.OrdinalIgnoreCase) < 0) return;
+            __result = __instance.GetEmissionEffect("weapon_m18_world");
+            Plugin.LogSource?.LogInfo($"[CSGas] emission key '{key}' has no pool entry — using weapon_m18_world fallback");
+        }
+    }
+
+    // universal in-hands hook (GoldenPick's pattern): WeaponPrefab.OnEnable fires whenever
+    // any weapon GameObject activates — the moment the m8230 container appears in hands we
+    // repair its missing settings, before any throw can NRE
+    public class CsGasPrefabRepairPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod() =>
+            AccessTools.Method(typeof(WeaponPrefab), nameof(WeaponPrefab.OnEnable));
+
+        [PatchPostfix]
+        public static void Postfix(WeaponPrefab __instance)
+        {
+            if (__instance is GrenadePrefab gp) M8230PrefabRepair.TryRepair(gp);
+        }
+    }
+
+    // the thrown grenade is an Instantiate of the container's world child — which sits
+    // INACTIVE at clone time on the repaired m8230, so AddComponent<SmokeGrenade>'s Awake
+    // (which caches GetComponent Collider/Rigidbody — both BSG-authored on that root) is
+    // deferred and Init NREs on the uncached collider. activate the clone and backfill
+    // what Awake would have cached. gated to our tpl; vanilla grenades untouched.
+    public class CsGasGrenadeInitFixPatch : ModulePatch
+    {
+        protected override MethodBase GetTargetMethod() =>
+            AccessTools.Method(typeof(Grenade), nameof(Grenade.Init), new[]
+            {
+                typeof(GrenadeSettings), typeof(string), typeof(ThrowWeapItemClass),
+                typeof(float), typeof(ISharedBallisticsCalculator), typeof(bool)
+            });
+
+        private static readonly FieldInfo ColliderField = AccessTools.Field(typeof(Grenade), "collider_0");
+        private static readonly System.Reflection.PropertyInfo RigidbodyProp = AccessTools.Property(typeof(Grenade), "Rigidbody");
+
+        [PatchPrefix]
+        public static void Prefix(Grenade __instance, ThrowWeapItemClass throwWeap)
+        {
+            if (__instance == null || throwWeap == null) return;
+            if (throwWeap.TemplateId.ToString() != CSGasConstants.CsGasTpl) return;
+
+            if (!__instance.gameObject.activeSelf)
+                __instance.gameObject.SetActive(true); // also runs the deferred Awake
+
+            if (ColliderField != null && ColliderField.GetValue(__instance) == null)
+                ColliderField.SetValue(__instance, __instance.GetComponent<Collider>());
+            if (RigidbodyProp != null && (Rigidbody)RigidbodyProp.GetValue(__instance) == null)
+                RigidbodyProp.SetValue(__instance, __instance.GetComponent<Rigidbody>());
+
+            // ground-truth diagnostics for the mesh-offset saga: where each renderer
+            // actually sits relative to the physics root on the thrown clone
+            foreach (var r in __instance.GetComponentsInChildren<Renderer>(true))
+                Plugin.LogSource?.LogInfo(
+                    $"[CSGas] thrown-clone renderer '{r.name}' offset={r.bounds.center - __instance.transform.position} active={r.gameObject.activeInHierarchy}");
         }
     }
 

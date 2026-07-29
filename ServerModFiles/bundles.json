@@ -7,6 +7,14 @@
     {
       "key": "csgas_fx.bundle",
       "dependencyKeys": []
+    },
+    {
+      "key": "weapon_grenade_m8230_container_manimal.bundle",
+      "dependencyKeys": [
+        "shaders",
+        "assets/content/weapons/weapon_root_anim_fix.bundle",
+        "assets/content/weapons/additional_hands/client_assets.bundle"
+      ]
     }
   ]
 }

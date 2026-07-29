@@ -24,6 +24,11 @@ namespace Manimal.CSGas.Gas
         private const float PointJitter = 0.45f;
 
         private readonly List<Vector3> _points = new List<Vector3>();
+        // cumulative sampling weights per point (~distance², so blocked directions — whose
+        // points cluster at the obstruction — get proportionally few particles and open
+        // directions absorb the rest, approximating volume conservation)
+        private float[] _cdf = new float[0];
+        private float _cdfTotal;
         private GClass1006 _caster;
         private ParticleSystem _ps;
         private Transform _grenade;   // may die before the cloud does — cache origin every frame it exists
@@ -130,6 +135,31 @@ namespace Manimal.CSGas.Gas
         {
             _nextRecast = Time.time + RecastInterval;
             _caster.RayCast(_points, _origin);
+
+            // rebuild the weighted-sampling table: a grenade against a wall clumps half its
+            // points at the wall face; distance²-weighting sends those particles into the
+            // open side instead (with a small floor so the canister itself still smokes)
+            if (_cdf.Length < _points.Count) _cdf = new float[_points.Count];
+            _cdfTotal = 0f;
+            for (var i = 0; i < _points.Count; i++)
+            {
+                var d = (_points[i] - _origin).magnitude;
+                _cdfTotal += d * d + 0.25f;
+                _cdf[i] = _cdfTotal;
+            }
+        }
+
+        // weighted random point — binary search over the cumulative table
+        private Vector3 SamplePoint()
+        {
+            var r = Random.value * _cdfTotal;
+            int lo = 0, hi = _points.Count - 1;
+            while (lo < hi)
+            {
+                var mid = (lo + hi) >> 1;
+                if (_cdf[mid] < r) lo = mid + 1; else hi = mid;
+            }
+            return _points[lo];
         }
 
         private float GrowFactor =>
@@ -169,7 +199,7 @@ namespace Manimal.CSGas.Gas
             };
             for (var i = 0; i < Plugin.GasParticlesPerEmit.Value; i++)
             {
-                var point = _points[Random.Range(0, _points.Count)];
+                var point = SamplePoint();
                 emitParams.position = Vector3.Lerp(_origin, point, grow) + Random.insideUnitSphere * PointJitter;
                 emitParams.velocity = Random.insideUnitSphere * 0.08f;
                 _ps.Emit(emitParams, 1);
