@@ -17,16 +17,18 @@ namespace Manimal.CSGas
 
         // two protection tiers, mirroring (and extending) 1.0's TearGasBlockingItem:
         // full gas masks seal the eyes too → block everything. respirators only cover
-        // the airway → block the health/cough side but the eyes still burn (sanding +
-        // contusion stay). tpls verified against the 4.0 server db + WTT-ContentBackport.
-        // Plugin.Awake appends extra tpls from config to either set.
+        // the airway → block the health/cough side but the eyes still burn. these are the
+        // compiled-in DEFAULTS — the authoritative list is the server's
+        // config/gas_masks.json, fetched via /csgas/masks and swapped in at startup
+        // (GasMaskFetch). F12 extra-tpl strings stay additive on top of either source.
         public const string Gp5Tpl = "5b432c305acfc40019478128";
         public const string Gp7Tpl = "60363c0c92ec1c31037959f5";
         public const string AvonM53Tpl = "689b880fff8b4adc420f5b56";        // WTT-ContentBackport
         public const string RespiratorTpl = "59e7715586f7742ee5789605";
         public const string SotrRespiratorTpl = "689b404db49f27df1c0873f6"; // WTT-ContentBackport
 
-        public static readonly HashSet<string> FullBlockTpls = new HashSet<string> { Gp5Tpl, Gp7Tpl, AvonM53Tpl };
-        public static readonly HashSet<string> RespiratorTpls = new HashSet<string> { RespiratorTpl, SotrRespiratorTpl };
+        // mutable on purpose: GasMaskFetch atomically swaps in the server-config sets
+        public static HashSet<string> FullBlockTpls = new HashSet<string> { Gp5Tpl, Gp7Tpl, AvonM53Tpl };
+        public static HashSet<string> RespiratorTpls = new HashSet<string> { RespiratorTpl, SotrRespiratorTpl };
     }
 }

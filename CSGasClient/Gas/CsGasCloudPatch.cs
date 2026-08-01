@@ -77,6 +77,33 @@ namespace Manimal.CSGas.Gas
         }
     }
 
+    // a bot with broken AI memory NREs in BotMemoryClass.Spotted whenever it HEARS
+    // anything — and because Grenade.InvokeBlowUpEvent is { method_6(); OnExplosion(); },
+    // that crash (raised inside method_6's GrenadeExplosion bot event) aborts the chain
+    // BEFORE OnExplosion → the gas never starts. root cause is a bot mod's half-initialized
+    // bot (not ours); this finalizer swallows the sensor crash so one broken bot cant kill
+    // every grenade on the map (or spam NREs on every gunshot). logs once per raid-ish.
+    public class CsGasBotHearingGuardPatch : ModulePatch
+    {
+        private static float _lastLogTime = -600f;
+
+        protected override MethodBase GetTargetMethod() =>
+            AccessTools.Method(typeof(BotMemoryClass), nameof(BotMemoryClass.Spotted));
+
+        [PatchFinalizer]
+        public static System.Exception Finalizer(System.Exception __exception)
+        {
+            if (__exception != null && Time.time - _lastLogTime > 300f)
+            {
+                _lastLogTime = Time.time;
+                Plugin.LogSource?.LogWarning(
+                    "[CSGas] suppressed a BotMemoryClass.Spotted exception (broken bot AI state — would abort grenade explosions): "
+                    + __exception.Message);
+            }
+            return null;
+        }
+    }
+
     // Fika compatibility: FikaPlayer OVERRIDES the meds Proceed, so the base-Player patch
     // above never fires for the local player in a Fika raid — patch the override too.
     // registered only when Fika is loaded (soft dependency guarantees load order).
@@ -160,6 +187,8 @@ namespace Manimal.CSGas.Gas
     // plume for our grenade anyway, so which pool it comes from is cosmetic.
     public class CsGasEmissionKeyPatch : ModulePatch
     {
+        private static bool _logged;
+
         protected override MethodBase GetTargetMethod() =>
             AccessTools.Method(typeof(Systems.Effects.Effects), nameof(Systems.Effects.Effects.GetEmissionEffect));
 
@@ -169,6 +198,8 @@ namespace Manimal.CSGas.Gas
             if (__result != null || key == null) return;
             if (key.IndexOf("m8230", System.StringComparison.OrdinalIgnoreCase) < 0) return;
             __result = __instance.GetEmissionEffect("weapon_m18_world");
+            if (_logged) return;
+            _logged = true;
             Plugin.LogSource?.LogInfo($"[CSGas] emission key '{key}' has no pool entry — using weapon_m18_world fallback");
         }
     }
@@ -218,12 +249,6 @@ namespace Manimal.CSGas.Gas
                 ColliderField.SetValue(__instance, __instance.GetComponent<Collider>());
             if (RigidbodyProp != null && (Rigidbody)RigidbodyProp.GetValue(__instance) == null)
                 RigidbodyProp.SetValue(__instance, __instance.GetComponent<Rigidbody>());
-
-            // ground-truth diagnostics for the mesh-offset saga: where each renderer
-            // actually sits relative to the physics root on the thrown clone
-            foreach (var r in __instance.GetComponentsInChildren<Renderer>(true))
-                Plugin.LogSource?.LogInfo(
-                    $"[CSGas] thrown-clone renderer '{r.name}' offset={r.bounds.center - __instance.transform.position} active={r.gameObject.activeInHierarchy}");
         }
     }
 

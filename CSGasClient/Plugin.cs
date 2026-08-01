@@ -95,6 +95,8 @@ namespace Manimal.CSGas
             GasCloudOpacity = Config.Bind("Volumetric", "CloudOpacity", 0.6f,
                 new ConfigDescription("Per-particle alpha for the gas cloud. Applies to newly emitted puffs (existing ones fade out at their old value).", new AcceptableValueRange<float>(0.05f, 1f)));
 
+            // F12 extras onto the defaults now; the server-config fetch below re-applies
+            // them on top of whatever config/gas_masks.json delivers
             foreach (var tpl in GasMaskExtraTpls.Value.Split(','))
             {
                 var trimmed = tpl.Trim();
@@ -105,6 +107,7 @@ namespace Manimal.CSGas
                 var trimmed = tpl.Trim();
                 if (trimmed.Length > 0) CSGasConstants.RespiratorTpls.Add(trimmed);
             }
+            GasMaskFetch.Begin();
 
             SafeEnable("CsGasPrefabRepairPatch",   () => new CsGasPrefabRepairPatch().Enable());
             SafeEnable("CsGasEmissionKeyPatch",    () => new CsGasEmissionKeyPatch().Enable());
@@ -118,6 +121,7 @@ namespace Manimal.CSGas
             if (HarmonyLib.AccessTools.TypeByName("Fika.Core.Main.Players.FikaPlayer") != null)
                 SafeEnable("CsGasMedBlockFikaPatch", () => new CsGasMedBlockFikaPatch().Enable());
             SafeEnable("CsGasWorldDisposePatch",   () => new CsGasWorldDisposePatch().Enable());
+            SafeEnable("CsGasBotHearingGuardPatch",() => new CsGasBotHearingGuardPatch().Enable());
         }
 
         // wrapper so one bad patch logs + moves on instead of taking down the whole Awake

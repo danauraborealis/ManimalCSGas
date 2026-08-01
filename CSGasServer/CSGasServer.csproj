@@ -107,6 +107,9 @@
     <Error Text="Client DLL not found at $(ClientDll). Build the solution (or the client project) before packaging." Condition="!Exists('$(ClientDll)')" />
     <Copy SourceFiles="$(ClientDll)" DestinationFolder="$(ClientOutDir)" />
 
+    <!-- Forge requires the license file inside the archive -->
+    <Copy SourceFiles="$(RepoRoot)LICENSE" DestinationFolder="$(TempPackageDir)" Condition="Exists('$(RepoRoot)LICENSE')" />
+
     <ZipDirectory SourceDirectory="$(TempPackageDir)" DestinationFile="$(RepoRoot)$(ZipFileName)" Overwrite="true" />
     <RemoveDir Directories="$(TempPackageDir)" />
     <Message Text="--- $(ZipFileName) packaged at $(RepoRoot) ---" Importance="high" />

@@ -56,7 +56,6 @@ namespace Manimal.CSGas.Gas
         private float _nextTremor;
         private bool _intoxicationDone;
         private bool _tearsApplied;
-        private static bool _buffDiagLogged;
         private static bool _tremorFailLogged;
         private static System.Reflection.MethodInfo _addTremor;
 
@@ -71,6 +70,15 @@ namespace Manimal.CSGas.Gas
 
         private void WhitenGrenadeParticles()
         {
+            // BSG left an active debug sphere mesh under the Area in the 1.0 prefab — the
+            // rebuilt container inherited it (thrown-clone diagnostics showed it rendering)
+            foreach (var t in GetComponentsInChildren<Transform>(true))
+            {
+                var n = t.name.ToLowerInvariant();
+                if (n.Contains("debugshpere") || n.Contains("debugsphere"))
+                    t.gameObject.SetActive(false);
+            }
+
             foreach (var ps in GetComponentsInChildren<ParticleSystem>(true))
             {
                 var main = ps.main;
@@ -156,8 +164,21 @@ namespace Manimal.CSGas.Gas
 
             var mount = FindSmokeport(transform) ?? transform;
             var jet = Instantiate(jetPrefab, mount.position, mount.rotation, mount);
+
+            // ripped-from-BSG systems (Smoke flow / Trail) still declare WBOIT's custom
+            // vertex streams — Standard Unlit reads them as scrambled UV/color and renders
+            // giant marbled squares. force the default stream layout on every renderer.
+            var defaultStreams = new List<ParticleSystemVertexStream>
+            {
+                ParticleSystemVertexStream.Position,
+                ParticleSystemVertexStream.Normal,
+                ParticleSystemVertexStream.Color,
+                ParticleSystemVertexStream.UV
+            };
+            foreach (var renderer in jet.GetComponentsInChildren<ParticleSystemRenderer>(true))
+                renderer.SetActiveVertexStreams(defaultStreams);
+
             Destroy(jet, Mathf.Max(1f, _smoke.EmitTime));
-            Plugin.LogSource?.LogInfo("[CSGas] nozzle jet attached");
         }
 
         private static Transform FindSmokeport(Transform root)
@@ -316,23 +337,6 @@ namespace Manimal.CSGas.Gas
                 {
                     _nextTremor = Time.time + 5f;
                     ApplyTremor(hc);
-                }
-
-                // one-shot diag: is the buff actually in the client's globals table?
-                // (tremor reported non-functional — bisect registration vs application)
-                if (!_buffDiagLogged)
-                {
-                    _buffDiagLogged = true;
-                    try
-                    {
-                        var known = GClass3009<EFT.HealthSystem.ActiveHealthController.GClass3008>.GClass1728_0
-                            .Effects.Stimulator.Buffs.ContainsKey(CSGasConstants.GasBuffName);
-                        Plugin.LogSource?.LogInfo($"[CSGas] buff '{CSGasConstants.GasBuffName}' in client globals: {known}");
-                    }
-                    catch (System.Exception e)
-                    {
-                        Plugin.LogSource?.LogWarning("[CSGas] buff diag failed: " + e.Message);
-                    }
                 }
 
                 // 1.0: "damage to the thorax (2 HP/second)" — muted so the slow asphyxiation

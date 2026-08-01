@@ -22,17 +22,20 @@ public record ModMetadata : AbstractModMetadata
     {
         { "com.wtt.commonlib", new SemanticVersioning.Range("~2.0.20") }
     };
-    public override string? Url { get; init; } = "";
+    public override string? Url { get; init; } = "https://github.com/WelcomeToTarkov/ManimalCSGas";
     public override bool? IsBundleMod { get; init; } = true;
     public override string License { get; init; } = "MIT";
 }
 
 [Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 2)]
 public class CSGasServer(
-    WTTServerCommonLib.WTTServerCommonLib wttCommon) : IOnLoad
+    WTTServerCommonLib.WTTServerCommonLib wttCommon,
+    CsGasMaskConfigStore maskConfig) : IOnLoad
 {
     public async Task OnLoad()
     {
+        // gas-mask tiers config, served to clients via /csgas/masks
+        maskConfig.Load();
         // registers everything under ServerModFiles/db/CustomItems — the cs gas grenade
         // json rides in as an M18 clone until the 1.0 assets/behavior land
         var assembly = Assembly.GetExecutingAssembly();
