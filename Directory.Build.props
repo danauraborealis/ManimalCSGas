@@ -8,7 +8,7 @@
       - the release zip filename (Manimal-CSGas-X.Y.Z.zip)
   -->
   <PropertyGroup>
-    <ModVersion>1.0.1</ModVersion>
+    <ModVersion>1.0.2</ModVersion>
     <ModUsername>Manimal</ModUsername>
     <ModDisplayName>CSGas</ModDisplayName>
     <Version>$(ModVersion)</Version>

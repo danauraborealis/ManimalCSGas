@@ -12,7 +12,8 @@
       "rcid": ""
     },
       "EmitTime": 30,
-      "ExplDelay": 2
+      "ExplDelay": 2,
+      "ThrowType": "flash_grenade"
     },
     "locales": {
       "en": {
