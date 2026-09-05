@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <OutputType>Library</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- AbstractModMetadata's overridable members carry nullable annotations; match its
@@ -20,11 +20,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lib.Harmony" Version="2.4.2" />
-    <PackageReference Include="SPTarkov.Common" Version="4.0.13" />
-    <PackageReference Include="SPTarkov.DI" Version="4.0.13" />
-    <PackageReference Include="SPTarkov.Server.Core" Version="4.0.13" />
-    <PackageReference Include="WTT-ServerCommonLib" Version="2.0.20" />
+    <Reference Include="0Harmony"><HintPath>$(SPTPath)\SPT_Runtime\0Harmony.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="SPTarkov.Common"><HintPath>$(SPTPath)\SPT_Runtime\SPTarkov.Common.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="SPTarkov.DI"><HintPath>$(SPTPath)\SPT_Runtime\SPTarkov.DI.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="SPTarkov.Server.Core"><HintPath>$(SPTPath)\SPT_Runtime\SPTarkov.Server.Core.dll</HintPath><Private>false</Private></Reference>
+    <Reference Include="WTT-ServerCommonLib"><HintPath>$(SPTPath)\SPT_Runtime\user\mods\WTT-ServerCommonLib\WTT-ServerCommonLib.dll</HintPath><Private>false</Private></Reference>
   </ItemGroup>
 
   <!--
@@ -46,9 +46,9 @@
     (which locks the DLL) doesnt block the JSON sync. Deletions are NOT mirrored —
     delete a removed JSON's deployed counterpart by hand.
   -->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Condition="'$(DeployToGame)' == 'true'" Name="PostBuild" AfterTargets="PostBuildEvent">
     <PropertyGroup>
-      <DevModDir>D:\SPTDev\SPT\user\mods\CSGasServer</DevModDir>
+      <DevModDir>$(SPTPath)\SPT_Runtime\user\mods\CSGasServer</DevModDir>
       <ServerModFilesDir>$(ProjectDir)..\ServerModFiles</ServerModFilesDir>
     </PropertyGroup>
     <ItemGroup>
@@ -77,7 +77,7 @@
     runs after the server build. the ProjectReference above forces the client to
     build first so its DLL is on disk when we pick it up.
   -->
-  <Target Name="PackageModForDistribution" AfterTargets="Build">
+  <Target Condition="'$(PackageMod)' == 'true'" Name="PackageModForDistribution" AfterTargets="Build">
     <PropertyGroup>
       <ZipFileName>$(ModUsername)-$(ModDisplayName)-$(ModVersion).zip</ZipFileName>
       <RepoRoot>$(ProjectDir)..\</RepoRoot>
@@ -114,4 +114,6 @@
     <RemoveDir Directories="$(TempPackageDir)" />
     <Message Text="--- $(ZipFileName) packaged at $(RepoRoot) ---" Importance="high" />
   </Target>
+
+  <ItemGroup><Reference Include="SemanticVersioning"><HintPath>$(SPTPath)\SPT_Runtime\SemanticVersioning.dll</HintPath><Private>false</Private></Reference></ItemGroup>
 </Project>

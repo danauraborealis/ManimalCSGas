@@ -18,12 +18,12 @@ namespace Manimal.CSGas.Gas
         protected override MethodBase GetTargetMethod() =>
             AccessTools.Method(typeof(SmokeGrenade), nameof(SmokeGrenade.Init), new[]
             {
-                typeof(GrenadeSettings), typeof(string), typeof(ThrowWeapItemClass),
-                typeof(float), typeof(ISharedBallisticsCalculator), typeof(bool)
+                typeof(GrenadeSettings), typeof(string), typeof(EFT.InventoryLogic.ThrowWeap),
+                typeof(float), typeof(EFT.Ballistics.IBallisticsCalculator), typeof(bool)
             });
 
         [PatchPostfix]
-        public static void Postfix(SmokeGrenade __instance, ThrowWeapItemClass throwWeap)
+        public static void Postfix(SmokeGrenade __instance, EFT.InventoryLogic.ThrowWeap throwWeap)
         {
             if (throwWeap == null || __instance == null) return;
             if (throwWeap.TemplateId.ToString() != CSGasConstants.CsGasTpl) return;
@@ -58,18 +58,18 @@ namespace Manimal.CSGas.Gas
         protected override MethodBase GetTargetMethod() =>
             AccessTools.Method(typeof(Player), nameof(Player.Proceed), new[]
             {
-                typeof(MedsItemClass), typeof(GStruct382<EBodyPart>),
-                typeof(Callback<GInterface203>), typeof(int), typeof(bool)
+                typeof(EFT.InventoryLogic.Meds), typeof(EFT.NetworkPackets.OneAndList<EBodyPart>),
+                typeof(Callback<EFT.IMedsController>), typeof(int), typeof(bool)
             });
 
         [PatchPrefix]
-        public static bool Prefix(Player __instance, Callback<GInterface203> callback)
+        public static bool Prefix(Player __instance, Callback<EFT.IMedsController> callback)
         {
             if (__instance == null || !__instance.IsYourPlayer) return true;
             if (!CsGasCloud.IsLocalPlayerGasBlocked) return true;
 
             // Callback<T> has no Fail extension — a failed Result<T> is the same thing
-            callback?.Invoke(new Result<GInterface203>(default, "Coughing in CS gas"));
+            callback?.Invoke(new Result<EFT.IMedsController>(default, "Coughing in CS gas"));
             // forced Dying mask → "breath near death" bank (see CsGasCloud cough tick)
             __instance.Speaker?.Play(EPhraseTrigger.OnBreath, ETagStatus.Dying, true, null);
             CoughAnimPlayer.TryPlay(__instance);
@@ -77,7 +77,7 @@ namespace Manimal.CSGas.Gas
         }
     }
 
-    // a bot with broken AI memory NREs in BotMemoryClass.Spotted whenever it HEARS
+    // a bot with broken AI memory NREs in EFT.BotMemory.Spotted whenever it HEARS
     // anything — and because Grenade.InvokeBlowUpEvent is { method_6(); OnExplosion(); },
     // that crash (raised inside method_6's GrenadeExplosion bot event) aborts the chain
     // BEFORE OnExplosion → the gas never starts. root cause is a bot mod's half-initialized
@@ -88,7 +88,7 @@ namespace Manimal.CSGas.Gas
         private static float _lastLogTime = -600f;
 
         protected override MethodBase GetTargetMethod() =>
-            AccessTools.Method(typeof(BotMemoryClass), nameof(BotMemoryClass.Spotted));
+            AccessTools.Method(typeof(EFT.BotMemory), nameof(EFT.BotMemory.Spotted));
 
         [PatchFinalizer]
         public static System.Exception Finalizer(System.Exception __exception)
@@ -97,7 +97,7 @@ namespace Manimal.CSGas.Gas
             {
                 _lastLogTime = Time.time;
                 Plugin.LogSource?.LogWarning(
-                    "[CSGas] suppressed a BotMemoryClass.Spotted exception (broken bot AI state — would abort grenade explosions): "
+                    "[CSGas] suppressed a EFT.BotMemory.Spotted exception (broken bot AI state — would abort grenade explosions): "
                     + __exception.Message);
             }
             return null;
@@ -116,12 +116,12 @@ namespace Manimal.CSGas.Gas
         protected override MethodBase GetTargetMethod() =>
             AccessTools.Method(AccessTools.TypeByName("Fika.Core.Main.Players.FikaPlayer"), "Proceed", new[]
             {
-                typeof(MedsItemClass), typeof(GStruct382<EBodyPart>),
-                typeof(Callback<GInterface203>), typeof(int), typeof(bool)
+                typeof(EFT.InventoryLogic.Meds), typeof(EFT.NetworkPackets.OneAndList<EBodyPart>),
+                typeof(Callback<EFT.IMedsController>), typeof(int), typeof(bool)
             });
 
         [PatchPrefix]
-        public static bool Prefix(Player __instance, Callback<GInterface203> callback)
+        public static bool Prefix(Player __instance, Callback<EFT.IMedsController> callback)
             => CsGasMedBlockPatch.Prefix(__instance, callback);
     }
 
@@ -165,13 +165,13 @@ namespace Manimal.CSGas.Gas
     public class CsGasHurtVoiceMutePatch : ModulePatch
     {
         protected override MethodBase GetTargetMethod() =>
-            AccessTools.Method(typeof(Player), "method_74", new[]
+            AccessTools.Method(typeof(Player), nameof(Player.OnAudioHealthApplyDamage), new[]
             {
-                typeof(EBodyPart), typeof(float), typeof(DamageInfoStruct)
+                typeof(EBodyPart), typeof(float), typeof(EFT.Ballistics.DamageInfo)
             });
 
         [PatchPrefix]
-        public static bool Prefix(float damage, DamageInfoStruct damageInfo)
+        public static bool Prefix(float damage, EFT.Ballistics.DamageInfo damageInfo)
         {
             if (damageInfo.DamageType == EDamageType.Environment && damage <= 3f
                 && CsGasCloud.IsLocalPlayerGasBlocked)
@@ -229,15 +229,15 @@ namespace Manimal.CSGas.Gas
         protected override MethodBase GetTargetMethod() =>
             AccessTools.Method(typeof(Grenade), nameof(Grenade.Init), new[]
             {
-                typeof(GrenadeSettings), typeof(string), typeof(ThrowWeapItemClass),
-                typeof(float), typeof(ISharedBallisticsCalculator), typeof(bool)
+                typeof(GrenadeSettings), typeof(string), typeof(EFT.InventoryLogic.ThrowWeap),
+                typeof(float), typeof(EFT.Ballistics.IBallisticsCalculator), typeof(bool)
             });
 
-        private static readonly FieldInfo ColliderField = AccessTools.Field(typeof(Grenade), "collider_0");
-        private static readonly System.Reflection.PropertyInfo RigidbodyProp = AccessTools.Property(typeof(Grenade), "Rigidbody");
+        private static readonly FieldInfo ColliderField = AccessTools.Field(typeof(Grenade), "_collider");
+        private static readonly System.Reflection.FieldInfo RigidbodyProp = AccessTools.Field(typeof(Grenade), "Rigidbody");
 
         [PatchPrefix]
-        public static void Prefix(Grenade __instance, ThrowWeapItemClass throwWeap)
+        public static void Prefix(Grenade __instance, EFT.InventoryLogic.ThrowWeap throwWeap)
         {
             if (__instance == null || throwWeap == null) return;
             if (throwWeap.TemplateId.ToString() != CSGasConstants.CsGasTpl) return;

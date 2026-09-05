@@ -1,3 +1,4 @@
+using SPTarkov.Server.Core.Models.Eft.Match;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Eft.Common;
@@ -18,7 +19,7 @@ public class CsGasMasksRouter(JsonUtil jsonUtil, CsGasMaskConfigStore store)
         [
             new RouteAction<EmptyRequestData>(
                 "/csgas/masks",
-                (url, info, sessionId, output) => new ValueTask<string>(store.Json)
+                (url, info, sessionId, output, cancellationToken) => new ValueTask<string>(store.Json)
             ),
         ]
     ) { }

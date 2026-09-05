@@ -230,7 +230,7 @@ namespace Manimal.CSGas.Gas
                 // fallback (volumetric disabled or emitter creation failed): the M18's own
                 // emission-area sphere + a wall linecast. area object is only active while
                 // the size curve says the cloud exists
-                var area = _smoke.SmokeGrenadeSettings_0?._emissionArea;
+                var area = _smoke._smokeGrenadeSettings?._emissionArea;
                 if (area == null || !area.gameObject.activeInHierarchy)
                 {
                     _exposure = 0f;
@@ -240,7 +240,7 @@ namespace Manimal.CSGas.Gas
                 var radius = area.radius * MaxComponent(area.transform.lossyScale);
                 inside = (head - center).sqrMagnitude <= radius * radius;
                 if (inside && Plugin.GasRequiresLineOfSight.Value
-                    && Physics.Linecast(center, head, LayerMaskClass.GrenadeObstaclesColliderMask))
+                    && Physics.Linecast(center, head, LayersMaskController.GrenadeObstaclesColliderMask))
                     inside = false;
             }
 
@@ -348,7 +348,7 @@ namespace Manimal.CSGas.Gas
                     MutingHitDebuff = true;
                     try
                     {
-                        hc.ApplyDamage(EBodyPart.Chest, damage, new DamageInfoStruct
+                        hc.ApplyDamage(EBodyPart.Chest, damage, new EFT.Ballistics.DamageInfo
                         {
                             DamageType = EDamageType.Environment,
                             Damage = damage
