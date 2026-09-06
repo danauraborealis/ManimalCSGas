@@ -15,18 +15,19 @@ public class CsGasMaskConfigStore
 
     public string Json { get; private set; } = FallbackJson;
 
-    public void Load()
+    public async Task LoadAsync(CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         try
         {
             var dir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
             var path = Path.Combine(dir, "config", "gas_masks.json");
             if (File.Exists(path))
             {
-                Json = File.ReadAllText(path);
+                Json = await File.ReadAllTextAsync(path, cancellationToken);
             }
         }
-        catch
+        catch (Exception e) when (e is not OperationCanceledException)
         {
             Json = FallbackJson;
         }

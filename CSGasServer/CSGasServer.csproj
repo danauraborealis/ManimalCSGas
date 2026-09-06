@@ -1,9 +1,9 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <OutputType>Library</OutputType>
     <ImplicitUsings>enable</ImplicitUsings>
-    <!-- AbstractModMetadata's overridable members carry nullable annotations; match its
+    <!-- SPT metadata members carry nullable annotations; match the server's
          context so the ? annotations in Mod.cs dont warn (CS8632). SPT's own projects
          build with nullable enabled. -->
     <Nullable>enable</Nullable>
@@ -21,10 +21,10 @@
 
   <ItemGroup>
     <PackageReference Include="Lib.Harmony" Version="2.4.2" />
-    <PackageReference Include="SPTarkov.Common" Version="4.0.13" />
-    <PackageReference Include="SPTarkov.DI" Version="4.0.13" />
-    <PackageReference Include="SPTarkov.Server.Core" Version="4.0.13" />
-    <PackageReference Include="WTT-ServerCommonLib" Version="2.0.20" />
+    <PackageReference Include="SPTushonka.Common" Version="4.1.5" />
+    <PackageReference Include="SPTushonka.DI" Version="4.1.5" />
+    <PackageReference Include="SPTushonka.Server.Core" Version="4.1.5" />
+    <PackageReference Include="WTT-ServerCommonLib" Version="3.0.6" />
   </ItemGroup>
 
   <!--
@@ -46,9 +46,9 @@
     (which locks the DLL) doesnt block the JSON sync. Deletions are NOT mirrored —
     delete a removed JSON's deployed counterpart by hand.
   -->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(DeployToGame)' == 'true'">
     <PropertyGroup>
-      <DevModDir>D:\SPTDev\SPT\user\mods\CSGasServer</DevModDir>
+      <DevModDir>$(SPTServerPath)\user\mods\CSGasServer</DevModDir>
       <ServerModFilesDir>$(ProjectDir)..\ServerModFiles</ServerModFilesDir>
     </PropertyGroup>
     <ItemGroup>
@@ -70,7 +70,7 @@
 
       Manimal-CSGas-{version}.zip
       ├── BepInEx/plugins/CSGas/CSGasClient.dll
-      └── SPT/user/mods/CSGasServer/
+      └── SPT_Runtime/user/mods/CSGasServer/
           ├── CSGasServer.dll
           └── db/...
 
@@ -82,7 +82,7 @@
       <ZipFileName>$(ModUsername)-$(ModDisplayName)-$(ModVersion).zip</ZipFileName>
       <RepoRoot>$(ProjectDir)..\</RepoRoot>
       <TempPackageDir>$(ProjectDir)obj\Package</TempPackageDir>
-      <ServerOutDir>$(TempPackageDir)\SPT\user\mods\CSGasServer</ServerOutDir>
+      <ServerOutDir>$(TempPackageDir)\SPT_Runtime\user\mods\CSGasServer</ServerOutDir>
       <ClientOutDir>$(TempPackageDir)\BepInEx\plugins\CSGas</ClientOutDir>
       <ServerModFilesDir>$(RepoRoot)ServerModFiles</ServerModFilesDir>
       <ClientBinDir>$(RepoRoot)CSGasClient\bin\$(Configuration)\netstandard2.1</ClientBinDir>
@@ -107,6 +107,7 @@
     <Error Text="Client DLL not found at $(ClientDll). Build the solution (or the client project) before packaging." Condition="!Exists('$(ClientDll)')" />
     <Copy SourceFiles="$(ClientDll)" DestinationFolder="$(ClientOutDir)" />
 
+    <Copy SourceFiles="$(RepoRoot)README.md" DestinationFolder="$(TempPackageDir)" />
     <!-- Forge requires the license file inside the archive -->
     <Copy SourceFiles="$(RepoRoot)LICENSE" DestinationFolder="$(TempPackageDir)" Condition="Exists('$(RepoRoot)LICENSE')" />
 

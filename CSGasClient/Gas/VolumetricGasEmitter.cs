@@ -4,12 +4,12 @@ using UnityEngine;
 namespace Manimal.CSGas.Gas
 {
     // the volume propagation half of the backport, borrowed from the RShG-2's volumetric
-    // explosion. GClass1006 is BSG's occlusion-aware spherical caster — uniform sphere
+    // explosion. VolumetricBounds is BSG's occlusion-aware spherical caster — uniform sphere
     // directions, one batched RaycastCommand pass, then three concentric shells of points
     // clipped at whatever geometry each ray hit. thats exactly a gas propagation query,
     // just computed instantly instead of simulated voxel-by-voxel like 1.0 did.
     //
-    // the rocket pairs it with GClass1007, whose particle material reads a _ControlPoints
+    // the rocket pairs it with VolumetricExplosion, whose particle material reads a _ControlPoints
     // GraphicsBuffer — that needs the rocket's shader, so we skip it and place particles
     // ourselves: clone the M18's longest-lived smoke system (real EFT smoke material) and
     // Emit(EmitParams) at cloud points, lerped grenade→point by a grow factor so the gas
@@ -29,7 +29,7 @@ namespace Manimal.CSGas.Gas
         // directions absorb the rest, approximating volume conservation)
         private float[] _cdf = new float[0];
         private float _cdfTotal;
-        private GClass1006 _caster;
+        private VolumetricBounds _caster;
         private ParticleSystem _ps;
         private Transform _grenade;   // may die before the cloud does — cache origin every frame it exists
         private Vector3 _origin;
@@ -127,7 +127,7 @@ namespace Manimal.CSGas.Gas
             // radius 1 + subdivisions n → ~n unit directions; maxParticles caps output at
             // the 3 shells the caster emits per direction
             var rays = Plugin.GasRayCount.Value;
-            _caster = new GClass1006(1f, rays, rays * 3, Plugin.GasMaxRadius.Value);
+            _caster = new VolumetricBounds(1f, rays, rays * 3, Plugin.GasMaxRadius.Value);
             Recast();
         }
 

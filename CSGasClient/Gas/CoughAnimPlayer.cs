@@ -38,7 +38,7 @@ namespace Manimal.CSGas.Gas
             if (overrideController == null) return;
 
             SetOverride(overrideController, clip);
-            WeaponAnimationSpeedControllerClass.SetUseLeftHand(animator, true);
+            AnimationControllerParametersTable.SetUseLeftHand(animator, true);
             animator.Play(StateAndClipName, -1, 0f);
 
             StaticManager.KillCoroutine(_playRoutine);
@@ -129,7 +129,7 @@ namespace Manimal.CSGas.Gas
                 }
             }
 
-            WeaponAnimationSpeedControllerClass.SetUseLeftHand(animator, false);
+            AnimationControllerParametersTable.SetUseLeftHand(animator, false);
             SetOverride(controller, null);
         }
     }

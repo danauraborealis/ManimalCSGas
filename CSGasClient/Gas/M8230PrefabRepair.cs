@@ -23,7 +23,7 @@ namespace Manimal.CSGas.Gas
                 // "defines grenade initial position"), with a name-scan fallback
                 Transform world = null;
                 if (gp.ThrowingParts != null && gp.ThrowingParts.Length > 0 && !string.IsNullOrEmpty(gp.ThrowingParts[0]))
-                    world = TransformHelperClass.FindTransformRecursive(gp.transform, gp.ThrowingParts[0], false);
+                    world = TransformTools.FindTransformRecursive(gp.transform, gp.ThrowingParts[0], false);
                 if (world == null)
                     world = FindByName(gp.transform, n => n.Contains("world") && !n.Contains("tripwire"));
                 if (world == null)

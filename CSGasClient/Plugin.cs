@@ -10,7 +10,7 @@ namespace Manimal.CSGas
     // version comes from ModVersion.g.cs (generated from $(ModVersion) in Directory.Build.props).
     // hard dep on commonlib so the item template exists before any of our patches run.
     [BepInPlugin(PluginGuid, PluginName, ModVersion.Value)]
-    [BepInDependency("com.wtt.commonlib")]
+    [BepInDependency("com.wtt.commonlib", "3.0.6")]
     // soft: only ordering — when Fika is present it must load first so our conditional
     // FikaPlayer patch can resolve its type
     [BepInDependency("com.fika.core", BepInDependency.DependencyFlags.SoftDependency)]

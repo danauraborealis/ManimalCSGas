@@ -40,7 +40,7 @@
   <ItemGroup>
     <!-- compile-time only — the DLL itself ships with the installed WTT-ClientCommonLib
          mod, we must NOT copy it into our plugin folder or bepinex loads it twice -->
-    <PackageReference Include="WTT-ClientCommonLib" Version="2.0.20" />
+    <PackageReference Include="WTT-ClientCommonLib" Version="3.0.6" />
   </ItemGroup>
 
   <!--
@@ -52,83 +52,83 @@
   -->
   <ItemGroup>
     <Reference Include="0Harmony">
-      <HintPath>D:\SPTDev\BepInEx\core\0Harmony.dll</HintPath>
+      <HintPath>$(SPTPath)\BepInEx\core\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="BepInEx">
-      <HintPath>D:\SPTDev\BepInEx\core\BepInEx.dll</HintPath>
+      <HintPath>$(SPTPath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="spt-common">
-      <HintPath>D:\SPTDev\BepInEx\plugins\spt\spt-common.dll</HintPath>
+      <HintPath>$(SPTPath)\BepInEx\plugins\spt\spt-common.dll</HintPath>
     </Reference>
     <Reference Include="spt-reflection">
-      <HintPath>D:\SPTDev\BepInEx\plugins\spt\spt-reflection.dll</HintPath>
+      <HintPath>$(SPTPath)\BepInEx\plugins\spt\spt-reflection.dll</HintPath>
     </Reference>
     <!-- BundleManager — resolve our bundles.json bundles to their client-local file
          (Fika/headless-safe; never assume client and server share a disk) -->
     <Reference Include="spt-custom">
-      <HintPath>D:\SPTDev\BepInEx\plugins\spt\spt-custom.dll</HintPath>
+      <HintPath>$(SPTPath)\BepInEx\plugins\spt\spt-custom.dll</HintPath>
     </Reference>
     <Reference Include="Assembly-CSharp">
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
     <Reference Include="Comfort">
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Comfort.dll</HintPath>
     </Reference>
     <Reference Include="Comfort.Unity">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\Comfort.Unity.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Comfort.Unity.dll</HintPath>
     </Reference>
     <Reference Include="ItemComponent.Types">
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\ItemComponent.Types.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\ItemComponent.Types.dll</HintPath>
     </Reference>
     <Reference Include="ItemTemplate.Types">
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\ItemTemplate.Types.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\ItemTemplate.Types.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\Newtonsoft.Json.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\UnityEngine.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule">
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
     <!-- grenade flight/impact -->
     <Reference Include="UnityEngine.PhysicsModule">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
     <!-- gas cloud FX -->
     <Reference Include="UnityEngine.ParticleSystemModule">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
     </Reference>
     <!-- gas hiss / cough sounds -->
     <Reference Include="UnityEngine.AudioModule">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\UnityEngine.AudioModule.dll</HintPath>
     </Reference>
     <!-- cough clip playback: AnimatorOverrideController/AnimationClip + EFT's IAnimator -->
     <Reference Include="UnityEngine.AnimationModule">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="AnimationSystem.Types">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\AnimationSystem.Types.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\AnimationSystem.Types.dll</HintPath>
     </Reference>
     <!-- AssetBundle.LoadFromFile for any backported 1.0 FX assets -->
     <Reference Include="UnityEngine.AssetBundleModule">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\SPTDev\EscapeFromTarkov_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+      <HintPath>$(SPTPath)\EscapeFromTarkov_Data\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
     </Reference>
   </ItemGroup>
 
   <!-- dev-time deploy: copy the DLL into the local SPTDev BepInEx plugins folder -->
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <MakeDir Directories="D:\SPTDev\BepInEx\plugins\CSGas" />
-    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;D:\SPTDev\BepInEx\plugins\CSGas\$(TargetFileName)&quot;" />
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(DeployToGame)' == 'true'">
+    <MakeDir Directories="$(SPTPath)\BepInEx\plugins\CSGas" />
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(SPTPath)\BepInEx\plugins\CSGas\$(TargetFileName)&quot;" />
   </Target>
 
 </Project>

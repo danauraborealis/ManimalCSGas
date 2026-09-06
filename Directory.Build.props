@@ -8,7 +8,10 @@
       - the release zip filename (Manimal-CSGas-X.Y.Z.zip)
   -->
   <PropertyGroup>
-    <ModVersion>1.0.2</ModVersion>
+    <ModVersion>2.0.0</ModVersion>
+    <SPTPath Condition="'$(SPTPath)' == ''">D:\SPT41Dev</SPTPath>
+    <SPTServerPath Condition="'$(SPTServerPath)' == ''">$(SPTPath)\SPT_Runtime</SPTServerPath>
+    <DeployToGame Condition="'$(DeployToGame)' == ''">false</DeployToGame>
     <ModUsername>Manimal</ModUsername>
     <ModDisplayName>CSGas</ModDisplayName>
     <Version>$(ModVersion)</Version>

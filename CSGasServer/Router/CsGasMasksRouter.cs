@@ -11,14 +11,14 @@ namespace CSGas.Router;
 // RouteAction<EmptyRequestData>: the client fetches with a bodyless GET, and SPT
 // deserializes a missing body into EmptyRequestData — a custom request record would
 // throw an InvalidCastException before the handler ever runs.
-[Injectable]
+[Injectable(TypePriority = OnLoadOrder.Routers + 1)]
 public class CsGasMasksRouter(JsonUtil jsonUtil, CsGasMaskConfigStore store)
     : StaticRouter(
         jsonUtil,
         [
             new RouteAction<EmptyRequestData>(
                 "/csgas/masks",
-                (url, info, sessionId, output) => new ValueTask<string>(store.Json)
+                (url, info, sessionId, output, cancellationToken) => new ValueTask<string>(store.Json)
             ),
         ]
     ) { }

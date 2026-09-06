@@ -85,7 +85,8 @@ namespace Manimal.CSGas.Gas
             {
                 Plugin.LogSource?.LogWarning($"[CSGas] BundleManager lookup failed for '{key}': {e.Message} — trying legacy local path");
             }
-            return Path.Combine(BepInEx.Paths.GameRootPath, LegacyBundleDir, key);
+            var runtimePath = Path.Combine(BepInEx.Paths.GameRootPath, "SPT_Runtime", "user", "mods", "CSGasServer", "bundles", key);
+            return File.Exists(runtimePath) ? runtimePath : Path.Combine(BepInEx.Paths.GameRootPath, LegacyBundleDir, key);
         }
 
         // first-person cough clip (med-use-blocked reaction), separate bundle so the user
