@@ -26,9 +26,11 @@ namespace Manimal.CSGas.Gas
         public static void Postfix(SmokeGrenade __instance, EFT.InventoryLogic.ThrowWeap throwWeap)
         {
             if (throwWeap == null || __instance == null) return;
-            if (throwWeap.TemplateId.ToString() != CSGasConstants.CsGasTpl) return;
+            var variant = CSGasConstants.VariantOf(throwWeap.TemplateId.ToString());
+            if (variant == null) return;
             if (__instance.GetComponent<CsGasCloud>() != null) return;
-            __instance.gameObject.AddComponent<CsGasCloud>();
+            // Start hasnt run yet, so the cloud reads its variant from the first frame
+            __instance.gameObject.AddComponent<CsGasCloud>().Variant = variant;
         }
     }
 
@@ -135,6 +137,7 @@ namespace Manimal.CSGas.Gas
         public static void Prefix()
         {
             CoughAnimPlayer.Controllers.Clear();
+            GasExposure.Clear();
         }
     }
 
@@ -240,7 +243,7 @@ namespace Manimal.CSGas.Gas
         public static void Prefix(Grenade __instance, EFT.InventoryLogic.ThrowWeap throwWeap)
         {
             if (__instance == null || throwWeap == null) return;
-            if (throwWeap.TemplateId.ToString() != CSGasConstants.CsGasTpl) return;
+            if (CSGasConstants.VariantOf(throwWeap.TemplateId.ToString()) == null) return;
 
             if (!__instance.gameObject.activeSelf)
                 __instance.gameObject.SetActive(true); // also runs the deferred Awake

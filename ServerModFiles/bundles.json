@@ -15,6 +15,22 @@
         "assets/content/weapons/weapon_root_anim_fix.bundle",
         "assets/content/weapons/additional_hands/client_assets.bundle"
       ]
+    },
+    {
+      "key": "weapon_grenade_rde68_yellow_hell26_container_manimal.bundle",
+      "dependencyKeys": [
+        "shaders",
+        "assets/content/weapons/weapon_root_anim_fix.bundle",
+        "assets/content/weapons/additional_hands/client_assets.bundle"
+      ]
+    },
+    {
+      "key": "weapon_grenade_rde78_green_hell26_container_manimal.bundle",
+      "dependencyKeys": [
+        "shaders",
+        "assets/content/weapons/weapon_root_anim_fix.bundle",
+        "assets/content/weapons/additional_hands/client_assets.bundle"
+      ]
     }
   ]
 }

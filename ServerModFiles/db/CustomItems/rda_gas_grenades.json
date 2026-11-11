@@ -1,0 +1,290 @@
+{
+  "6a9854e0788619fe8502a6b7": {
+    "itemTplToClone": "617aa4dd8166f034d57de9c5",
+    "parentId": "543be6564bdc2df4348b4568",
+    "handbookParentId": "5b5f7a2386f774093f2ed3c4",
+    "overrideProperties": {
+      "ExaminedByDefault": false,
+      "CanSellOnRagfair": false,
+      "BackgroundColor": "yellow",
+      "Prefab": {
+        "path": "weapon_grenade_rde68_yellow_hell26_container_manimal.bundle",
+        "rcid": ""
+      },
+      "EmitTime": 30,
+      "ExplDelay": 2,
+      "ThrowType": "flash_grenade"
+    },
+    "locales": {
+      "ch": {
+        "name": "Model 8230 CS 催泪弹 (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "一枚 Model 8230 催泪弹，里面装有 RDA-68 疫苗。"
+      },
+      "cz": {
+        "name": "Granát se slzným plynem CS Model 8230 (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "en": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "es": {
+        "name": "Granada de gas CS Model 8230 (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "Una granada de gas CS Model 8230 que contiene la vacuna RDA-68."
+      },
+      "es-mx": {
+        "name": "Granada de gas CS Model 8230 (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "Una granada de gas CS Model 8230 que contiene la vacuna RDA-68."
+      },
+      "fr": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "ge": {
+        "name": "Gasgranate Modell 8230 CS (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "Eine Gasgranate vom Typ 8230 CS, die den Impfstoff RDA-68 enthält."
+      },
+      "hu": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "in": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "it": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "jp": {
+        "name": "Model 8230 CS ガスグレネード (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "RDA-68 ワクチンを封入した Model 8230 CS 催涙ガスグレネードだ。"
+      },
+      "kr": {
+        "name": "Model 8230 CS 가스 수류탄 (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "RDA-68 백신이 들어있는 Model 8230 CS 가스 수류탄입니다."
+      },
+      "pl": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "po": {
+        "name": "Granada de gás CS Model 8230 (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "Uma granada de gás CS Model 8230 contendo a vacina RDA-68."
+      },
+      "ro": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "ru": {
+        "name": "Газовая граната CS Model 8230 (РДЭ-68)",
+        "shortName": "РДЭ-68",
+        "description": "Газовая граната CS Model 8230 с прототипом вакцины РДЭ-68 внутри."
+      },
+      "sk": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "th": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "tu": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      },
+      "vi": {
+        "name": "Model 8230 CS gas grenade (RDA-68)",
+        "shortName": "RDA-68",
+        "description": "A Model 8230 CS gas grenade containing the RDA-68 vaccine."
+      }
+    },
+    "fleaPriceRoubles": 25000,
+    "handbookPriceRoubles": 18945,
+    "addtoItemBlacklist": false,
+    "addtoInventorySlots": [],
+    "addtoModSlots": false,
+    "modSlot": [],
+    "addtoTraders": true,
+    "traders": {
+      "THERAPIST": {
+        "6ae3015e284f4295d003226d": {
+          "barterSettings": {
+            "loyalLevel": 1,
+            "unlimitedCount": true,
+            "stackObjectsCount": 999999,
+            "buyRestrictionMax": 3
+          },
+          "barters": [
+            {
+              "count": 1,
+              "_tpl": "6a5d6a5f4ed8c025a0a2cff0"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "6a9854955358fa10380b8509": {
+    "itemTplToClone": "617aa4dd8166f034d57de9c5",
+    "parentId": "543be6564bdc2df4348b4568",
+    "handbookParentId": "5b5f7a2386f774093f2ed3c4",
+    "overrideProperties": {
+      "ExaminedByDefault": false,
+      "CanSellOnRagfair": false,
+      "BackgroundColor": "green",
+      "Prefab": {
+        "path": "weapon_grenade_rde78_green_hell26_container_manimal.bundle",
+        "rcid": ""
+      },
+      "EmitTime": 30,
+      "ExplDelay": 2,
+      "ThrowType": "flash_grenade"
+    },
+    "locales": {
+      "ch": {
+        "name": "Model 8230 CS 催泪弹 (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "一枚 Model 8230 催泪弹，里面装有 RDA-78 疫苗。"
+      },
+      "cz": {
+        "name": "Granát se slzným plynem CS Model 8230 (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "en": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "es": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "es-mx": {
+        "name": "Granada de gas CS Model 8230 (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "Una granada de gas CS Model 8230 que contiene la vacuna RDA-78."
+      },
+      "fr": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "ge": {
+        "name": "Gasgranate Modell 8230 CS (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "Eine Gasgranate vom Typ 8230 CS, die den Impfstoff RDA-78 enthält."
+      },
+      "hu": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "in": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "it": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "jp": {
+        "name": "Model 8230 CS ガスグレネード (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "RDA-78 ワクチンを封入した Model 8230 CS 催涙ガスグレネードだ。"
+      },
+      "kr": {
+        "name": "Model 8230 CS 가스 수류탄 (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "RDA-78 백신이 들어있는 Model 8230 CS 가스 수류탄입니다."
+      },
+      "pl": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "po": {
+        "name": "Granada de gás CS Model 8230 (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "Uma granada de gás CS Model 8230 contendo a vacina RDA-78."
+      },
+      "ro": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "ru": {
+        "name": "Газовая граната CS Model 8230 (РДЭ-78)",
+        "shortName": "РДЭ-78",
+        "description": "Газовая граната CS Model 8230 с вакциной РДЭ-78 внутри."
+      },
+      "sk": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "th": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "tu": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      },
+      "vi": {
+        "name": "Model 8230 CS gas grenade (RDA-78)",
+        "shortName": "RDA-78",
+        "description": "A Model 8230 CS gas grenade containing the RDA-78 vaccine."
+      }
+    },
+    "fleaPriceRoubles": 25000,
+    "handbookPriceRoubles": 18945,
+    "addtoItemBlacklist": false,
+    "addtoInventorySlots": [],
+    "addtoModSlots": false,
+    "modSlot": [],
+    "addtoTraders": true,
+    "traders": {
+      "THERAPIST": {
+        "6ae3015f284f4295d0032285": {
+          "barterSettings": {
+            "loyalLevel": 1,
+            "unlimitedCount": true,
+            "stackObjectsCount": 999999,
+            "buyRestrictionMax": 3
+          },
+          "barters": [
+            {
+              "count": 1,
+              "_tpl": "6a5d6a5f4ed8c025a0a2cff0"
+            }
+          ]
+        }
+      }
+    }
+  }
+}

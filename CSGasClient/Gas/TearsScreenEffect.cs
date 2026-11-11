@@ -14,14 +14,28 @@ namespace Manimal.CSGas.Gas
         private static TearsScreenEffect _instance;
         private static readonly int StrengthId = Shader.PropertyToID("_Strength");
         private static readonly int MainTexId = Shader.PropertyToID("_MainTex");
+        private static readonly int ColorFromId = Shader.PropertyToID("_VignetteColorFrom");
+        private static readonly int ColorToId = Shader.PropertyToID("_VignetteColorTo");
+        private const float TintChangeSpeed = 1.5f; // per second, walking from one gas into another
 
         private Material _material;
         private float _strength;
         private float _target;
+        private bool _tintable;
+        private Color _baseFrom, _baseTo;
+        private Color _tint = Color.white;
+        private Color _tintTarget = Color.white;
+
+        // fade out — keeps whatever colour the overlay has
+        public static void SetTarget(float target)
+        {
+            if (_instance != null) _instance._target = target;
+        }
 
         // finds the current raid camera each call — cameras die between raids, so the
-        // component is recreated on demand rather than cached across sessions
-        public static void SetTarget(float target)
+        // component is recreated on demand rather than cached across sessions.
+        // tint is the gas colour: the vignette's two greys are multiplied by it
+        public static void SetTarget(float target, Color tint)
         {
             if (_instance == null)
             {
@@ -33,12 +47,30 @@ namespace Manimal.CSGas.Gas
                 _instance = cam.gameObject.AddComponent<TearsScreenEffect>();
                 // private copy — the bundle asset survives camera teardown between raids
                 _instance._material = new Material(material);
+                _instance._tintable = material.HasProperty(ColorFromId) && material.HasProperty(ColorToId);
+                if (_instance._tintable)
+                {
+                    _instance._baseFrom = material.GetColor(ColorFromId);
+                    _instance._baseTo = material.GetColor(ColorToId);
+                }
+                _instance._tint = tint; // starts in the right colour instead of fading in from white
             }
             _instance._target = target;
+            _instance._tintTarget = tint;
         }
 
         private void Update()
         {
+            if (_tint != _tintTarget)
+            {
+                var step = TintChangeSpeed * Time.deltaTime;
+                _tint = new Color(
+                    Mathf.MoveTowards(_tint.r, _tintTarget.r, step),
+                    Mathf.MoveTowards(_tint.g, _tintTarget.g, step),
+                    Mathf.MoveTowards(_tint.b, _tintTarget.b, step),
+                    1f);
+            }
+
             _strength = Mathf.MoveTowards(_strength, _target, StrengthChangeSpeed * Time.deltaTime);
             if (_target <= 0f && _strength <= 0.001f)
                 Destroy(this);
@@ -61,6 +93,11 @@ namespace Manimal.CSGas.Gas
 
             _material.SetFloat(StrengthId, _strength);
             _material.SetTexture(MainTexId, src);
+            if (_tintable)
+            {
+                _material.SetColor(ColorFromId, new Color(_baseFrom.r * _tint.r, _baseFrom.g * _tint.g, _baseFrom.b * _tint.b, _baseFrom.a));
+                _material.SetColor(ColorToId, new Color(_baseTo.r * _tint.r, _baseTo.g * _tint.g, _baseTo.b * _tint.b, _baseTo.a));
+            }
 
             Graphics.SetRenderTarget(dst);
             GL.PushMatrix();

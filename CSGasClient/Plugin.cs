@@ -31,6 +31,7 @@ namespace Manimal.CSGas
         public static ConfigEntry<bool> GasRequiresLineOfSight;
         public static ConfigEntry<string> GasMaskExtraTpls;
         public static ConfigEntry<string> GasRespiratorExtraTpls;
+        public static ConfigEntry<bool> GasInfectedBuffs;
 
         // cough animation blending — same knobs as WatchAnims, read live each play
         public static ConfigEntry<float> CoughBlendInTime;
@@ -70,6 +71,10 @@ namespace Manimal.CSGas
                 "Comma-separated extra FaceCover tpls that FULLY block the gas (like GP-5/GP-7/Avon M53A1).");
             GasRespiratorExtraTpls = Config.Bind("Gas", "ExtraRespiratorTpls", "",
                 "Comma-separated extra FaceCover tpls that block only the health/cough effects (eyes still burn), like the respirators.");
+
+            GasInfectedBuffs = Config.Bind("Gas", "InfectedBuffs", true,
+                "RDA-68 and RDA-78 gas apply their buff to infected that enter the cloud (68 hardens them, 78 drains them). "
+                + "Off keeps only the mark that quests read.");
 
             CoughBlendInTime = Config.Bind("Cough Animation", "Blend in time", 0.15f,
                 new ConfigDescription("Seconds to fade the cough animation in.", new AcceptableValueRange<float>(0f, 2f)));

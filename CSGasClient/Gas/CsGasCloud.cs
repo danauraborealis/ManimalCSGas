@@ -40,6 +40,9 @@ namespace Manimal.CSGas.Gas
         private static float _lastLungExposureTime = -10f;
         internal static bool IsLocalPlayerGasBlocked => Time.time - _lastLungExposureTime < TickInterval * 2.5f;
 
+        // which gas this is. set by the Init patch right after AddComponent, before Start
+        internal GasVariant Variant = GasVariant.Cs;
+
         private SmokeGrenade _smoke;
         private VolumetricGasEmitter _emitter;
         private GrenadeEmission _emission;
@@ -82,7 +85,7 @@ namespace Manimal.CSGas.Gas
             foreach (var ps in GetComponentsInChildren<ParticleSystem>(true))
             {
                 var main = ps.main;
-                main.startColor = new ParticleSystem.MinMaxGradient(Color.white);
+                main.startColor = new ParticleSystem.MinMaxGradient(Variant.Tint);
 
                 var col = ps.colorOverLifetime;
                 if (col.enabled && col.color.mode == ParticleSystemGradientMode.Gradient && col.color.gradient != null)
@@ -91,7 +94,7 @@ namespace Manimal.CSGas.Gas
                     var whitened = new Gradient();
                     var colorKeys = src.colorKeys;
                     for (var i = 0; i < colorKeys.Length; i++)
-                        colorKeys[i].color = Color.white;
+                        colorKeys[i].color = Variant.Tint;
                     whitened.SetKeys(colorKeys, src.alphaKeys);
                     col.color = new ParticleSystem.MinMaxGradient(whitened);
                 }
@@ -164,6 +167,14 @@ namespace Manimal.CSGas.Gas
 
             var mount = FindSmokeport(transform) ?? transform;
             var jet = Instantiate(jetPrefab, mount.position, mount.rotation, mount);
+            if (Variant.Tint != Color.white)
+            {
+                foreach (var ps in jet.GetComponentsInChildren<ParticleSystem>(true))
+                {
+                    var jetMain = ps.main;
+                    jetMain.startColor = new ParticleSystem.MinMaxGradient(Variant.Tint);
+                }
+            }
 
             // ripped-from-BSG systems (Smoke flow / Trail) still declare WBOIT's custom
             // vertex streams — Standard Unlit reads them as scrambled UV/color and renders
@@ -208,6 +219,8 @@ namespace Manimal.CSGas.Gas
                 _exposure = 0f;
                 return;
             }
+
+            DoseInfected();
 
             var player = Singleton<GameWorld>.Instance?.MainPlayer;
             if (player == null || player.HealthController == null || !player.HealthController.IsAlive)
@@ -259,7 +272,7 @@ namespace Manimal.CSGas.Gas
             // eyes, so only a full gas mask escapes this — and Full already zeroed `inside`
             if (Plugin.GasTearsEnabled.Value)
             {
-                TearsScreenEffect.SetTarget(Plugin.GasTearsStrength.Value);
+                TearsScreenEffect.SetTarget(Plugin.GasTearsStrength.Value, Variant.Tint);
                 _tearsApplied = true;
             }
 
@@ -285,12 +298,12 @@ namespace Manimal.CSGas.Gas
             // only template fallbacks
             if (_emission != null)
             {
-                _emitter = VolumetricGasEmitter.Create(_smoke, _emission.gameObject);
+                _emitter = VolumetricGasEmitter.Create(_smoke, _emission.gameObject, Variant.Tint);
                 _emitterCreated = true;
             }
             else if (Time.time >= _explodedAt + EmissionWaitGrace)
             {
-                _emitter = VolumetricGasEmitter.Create(_smoke, gameObject);
+                _emitter = VolumetricGasEmitter.Create(_smoke, gameObject, Variant.Tint);
                 _emitterCreated = true;
             }
         }
@@ -414,6 +427,35 @@ namespace Manimal.CSGas.Gas
                 return GasProtection.None;
             }
             catch { return GasProtection.None; } // inventory mid-transaction — treat as unmasked for this tick
+        }
+
+        // infected that walk into a vaccine cloud get its buff and a mark other mods can read.
+        // plain cs gas has no infected buff, so this is a no-op for it.
+        private void DoseInfected()
+        {
+            if (Variant.InfectedBuff == null) return;
+            var players = Singleton<GameWorld>.Instance?.AllAlivePlayersList;
+            if (players == null) return;
+            for (var i = 0; i < players.Count; i++)
+            {
+                var bot = players[i];
+                if (bot == null || bot.IsYourPlayer || !GasExposure.IsInfected(bot)) continue;
+                var head = bot.PlayerBones != null ? bot.PlayerBones.Head.position : bot.Position;
+                if (IsInsideCloud(head)) GasExposure.Mark(bot, Variant.InfectedBuff);
+            }
+        }
+
+        // same membership test the local player gets, for any head position
+        private bool IsInsideCloud(Vector3 head)
+        {
+            if (_emitter != null) return _emitter.IsInside(head, Plugin.GasPointRadiusM.Value);
+            var area = _smoke._smokeGrenadeSettings?._emissionArea;
+            if (area == null || !area.gameObject.activeInHierarchy) return false;
+            var center = area.transform.position;
+            var radius = area.radius * MaxComponent(area.transform.lossyScale);
+            if ((head - center).sqrMagnitude > radius * radius) return false;
+            return !(Plugin.GasRequiresLineOfSight.Value
+                && Physics.Linecast(center, head, LayersMaskController.GrenadeObstaclesColliderMask));
         }
 
         private static float MaxComponent(Vector3 v) => Mathf.Max(v.x, Mathf.Max(v.y, v.z));

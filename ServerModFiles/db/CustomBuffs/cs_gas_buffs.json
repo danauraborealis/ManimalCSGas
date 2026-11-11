@@ -18,5 +18,45 @@
       "AbsoluteValue": true,
       "SkillName": ""
     }
+  ],
+  "Buffs_ZombieGasEnrage": [
+    {
+      "BuffType": "HealthRate",
+      "Chance": 1,
+      "Delay": 0,
+      "Duration": 60,
+      "Value": 5,
+      "AbsoluteValue": true,
+      "SkillName": ""
+    },
+    {
+      "BuffType": "DamageModifier",
+      "Chance": 1,
+      "Delay": 0,
+      "Duration": 60,
+      "Value": -0.2,
+      "AbsoluteValue": true,
+      "SkillName": ""
+    }
+  ],
+  "Buffs_ZombieGasWeakness": [
+    {
+      "BuffType": "HealthRate",
+      "Chance": 1,
+      "Delay": 0,
+      "Duration": 60,
+      "Value": -60,
+      "AbsoluteValue": true,
+      "SkillName": ""
+    },
+    {
+      "BuffType": "DamageModifier",
+      "Chance": 1,
+      "Delay": 0,
+      "Duration": 60,
+      "Value": 0.4,
+      "AbsoluteValue": true,
+      "SkillName": ""
+    }
   ]
 }

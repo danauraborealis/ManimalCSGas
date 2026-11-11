@@ -39,10 +39,12 @@ namespace Manimal.CSGas.Gas
         private float _nextRecast;
         private float _particleLifetime;
         private bool _finished;
+        // white for cs gas, yellow-green for the vaccine gases. rides the particle vertex colour
+        private Color _tint = Color.white;
 
         // template priority: the authored csgas_fx.bundle prefab (1.0 texture, editor-tuned),
         // then the pooled GrenadeEmission (the real smoke plume), then the grenade prefab
-        public static VolumetricGasEmitter Create(SmokeGrenade smoke, GameObject templateSource)
+        public static VolumetricGasEmitter Create(SmokeGrenade smoke, GameObject templateSource, Color tint)
         {
             var fromBundle = false;
             ParticleSystem template = null;
@@ -67,6 +69,7 @@ namespace Manimal.CSGas.Gas
             emitter._origin = smoke.transform.position + Vector3.up * 0.3f;
             emitter._emitUntil = Time.time + smoke.EmitTime;
             emitter._growStart = Time.time;
+            emitter._tint = tint;
             emitter.BuildParticleSystem(template, fromBundle);
             emitter.BuildCaster();
             return emitter;
@@ -195,7 +198,7 @@ namespace Manimal.CSGas.Gas
             var grow = GrowFactor;
             var emitParams = new ParticleSystem.EmitParams
             {
-                startColor = new Color(1f, 1f, 1f, Plugin.GasCloudOpacity.Value)
+                startColor = new Color(_tint.r, _tint.g, _tint.b, Plugin.GasCloudOpacity.Value)
             };
             for (var i = 0; i < Plugin.GasParticlesPerEmit.Value; i++)
             {
