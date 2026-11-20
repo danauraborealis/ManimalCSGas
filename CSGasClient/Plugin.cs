@@ -129,6 +129,21 @@ namespace Manimal.CSGas
             SafeEnable("CsGasBotHearingGuardPatch",() => new CsGasBotHearingGuardPatch().Enable());
         }
 
+        private bool _overlayFailed;
+
+        private void Update()
+        {
+            if (_overlayFailed) return;
+            try { GasMaskOverlay.Tick(); }
+            catch (System.Exception e)
+            {
+                // per-frame — log once and stop for this session, without touching the saved setting
+                LogSource?.LogError("[CSGas] gas mask overlay failed, off until restart: " + e);
+                _overlayFailed = true;
+                try { GasMaskOverlay.Reset(); } catch { }
+            }
+        }
+
         // wrapper so one bad patch logs + moves on instead of taking down the whole Awake
         private static void SafeEnable(string name, System.Action enable)
         {

@@ -138,6 +138,7 @@ namespace Manimal.CSGas.Gas
         {
             CoughAnimPlayer.Controllers.Clear();
             GasExposure.Clear();
+            GasMaskOverlay.Reset();
         }
     }
 

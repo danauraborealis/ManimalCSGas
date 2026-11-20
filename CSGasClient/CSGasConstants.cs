@@ -69,5 +69,32 @@ namespace Manimal.CSGas
         // mutable on purpose: GasMaskFetch atomically swaps in the server-config sets
         public static HashSet<string> FullBlockTpls = new HashSet<string> { Gp5Tpl, Gp7Tpl, AvonM53Tpl };
         public static HashSet<string> RespiratorTpls = new HashSet<string> { RespiratorTpl, SotrRespiratorTpl };
+
+        public const string MsaMillenniumTpl = "6a83168651cfbe231b091a0f";  // WTT-ContentBackport
+
+        // retail's FaceCoverMask per face cover. MSA is retail's own value (WTT data), the rest are
+        // picked by eyepiece shape
+        public static readonly Dictionary<string, MaskOverlay> MaskOverlays = new Dictionary<string, MaskOverlay>
+        {
+            { Gp5Tpl, new MaskOverlay(MaskOverlay.EShape.GasMaskOld, 1.2f) },
+            { Gp7Tpl, new MaskOverlay(MaskOverlay.EShape.GasMaskOld, 1.2f) },
+            { AvonM53Tpl, new MaskOverlay(MaskOverlay.EShape.Binocular, 1.2f) },
+            { MsaMillenniumTpl, new MaskOverlay(MaskOverlay.EShape.Binocular, 1.2f) },
+        };
+    }
+
+    internal sealed class MaskOverlay
+    {
+        // same names as retail's FaceCoverMaskComponent.EFaceCoverMask
+        public enum EShape { None, GasMaskOld, Binocular }
+
+        public readonly EShape Shape;
+        public readonly float Size;
+
+        public MaskOverlay(EShape shape, float size)
+        {
+            Shape = shape;
+            Size = size;
+        }
     }
 }

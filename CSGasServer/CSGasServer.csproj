@@ -107,7 +107,7 @@
     <Error Text="Client DLL not found at $(ClientDll). Build the solution (or the client project) before packaging." Condition="!Exists('$(ClientDll)')" />
     <Copy SourceFiles="$(ClientDll)" DestinationFolder="$(ClientOutDir)" />
 
-    <Copy SourceFiles="$(RepoRoot)README.md" DestinationFolder="$(TempPackageDir)" />
+    <Copy SourceFiles="$(RepoRoot)README.md" DestinationFolder="$(TempPackageDir)" Condition="Exists('$(RepoRoot)README.md')" />
     <!-- Forge requires the license file inside the archive -->
     <Copy SourceFiles="$(RepoRoot)LICENSE" DestinationFolder="$(TempPackageDir)" Condition="Exists('$(RepoRoot)LICENSE')" />
 
